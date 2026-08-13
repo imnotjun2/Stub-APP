@@ -1,11 +1,5 @@
 import SwiftUI
 
-private enum TripDisplayMode: String, CaseIterable, Identifiable {
-    case map
-    case books
-    var id: String { rawValue }
-}
-
 private enum TripRoute: Hashable {
     case book(UUID)
 }
@@ -14,8 +8,6 @@ struct TripsView: View {
     @EnvironmentObject private var store: ArchiveStore
     @Environment(\.stubLanguage) private var language
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var displayMode: TripDisplayMode = .map
     @State private var showNewTrip = false
 
     let onEdit: (UUID) -> Void
@@ -40,20 +32,8 @@ struct TripsView: View {
                     .padding(.top, 6)
                     .fixedSize(horizontal: false, vertical: true)
 
-                TripModeSwitcher(selection: $displayMode)
-                .padding(.top, 16)
-                .padding(.bottom, 14)
-
-                Group {
-                    if displayMode == .map {
-                        mapExperience(palette)
-                            .transition(.opacity.combined(with: .scale(scale: 0.985, anchor: .top)))
-                    } else {
-                        bookShelf(palette)
-                            .transition(.opacity.combined(with: .scale(scale: 0.985, anchor: .top)))
-                    }
-                }
-                .animation(reduceMotion ? nil : .snappy(duration: 0.24, extraBounce: 0), value: displayMode)
+                mapExperience(palette)
+                    .padding(.top, 20)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 24)
@@ -195,34 +175,6 @@ struct TripsView: View {
         .allowsHitTesting(false)
     }
 
-    private func bookShelf(_ palette: StubPalette) -> some View {
-        LazyVStack(spacing: 14) {
-            ForEach(store.browsableTrips) { trip in
-                NavigationLink(value: TripRoute.book(trip.id)) {
-                    TripCoverCard(trip: trip)
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(.top, 8)
-    }
-}
-
-private struct TripModeSwitcher: View {
-    @Environment(\.stubLanguage) private var language
-    @Environment(\.colorScheme) private var colorScheme
-    @Binding var selection: TripDisplayMode
-
-    var body: some View {
-        let palette = StubPalette(colorScheme)
-        Picker(language == .zh ? "旅册显示方式" : "Trip display mode", selection: $selection) {
-            Text(language == .zh ? "地图" : "Map").tag(TripDisplayMode.map)
-            Text(language == .zh ? "书架" : "Books").tag(TripDisplayMode.books)
-        }
-        .pickerStyle(.segmented)
-        .tint(palette.brand)
-        .accessibilityIdentifier("tripModeSwitcher")
-    }
 }
 
 private struct TripCoverCard: View {
