@@ -1,0 +1,87 @@
+<scroll-view class="page-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="screen home-screen">
+    <view class="brand-header">
+      <view>
+        <text class="wordmark">Stub</text>
+        <text class="brand-subtitle">生活存根</text>
+      </view>
+    </view>
+
+    <view class="month-block">
+      <view class="month-copy">
+        <text class="month-title">{{monthTitle}}</text>
+        <text class="month-caption">{{yearLabel}} · 记录生活，留住每个瞬间。</text>
+      </view>
+      <view
+        class="content-action"
+        aria-role="button"
+        aria-label="留下一张"
+        hover-class="content-action--pressed"
+        bindtap="openEditor"
+      >＋</view>
+    </view>
+
+    <view wx:if="{{featured}}" class="featured-block" data-id="{{featured.id}}" bindtap="openDetail">
+      <view class="ticket-paper paper-card">
+        <image wx:if="{{featured.hasCover}}" class="ticket-cover" src="{{featured.cover}}" mode="{{featured.coverMode}}" />
+        <view wx:else class="ticket-placeholder">
+          <text>{{featured.categorySymbol}}</text>
+        </view>
+        <view class="ticket-content">
+          <view class="ticket-meta-row">
+            <text class="ticket-category">{{featured.categoryLabel}}</text>
+            <text class="ticket-date">{{featured.dateLabel}}</text>
+          </view>
+          <text class="ticket-title">{{featured.title}}</text>
+          <text wx:if="{{featured.metadata}}" class="ticket-metadata">{{featured.metadata}}</text>
+          <view class="tag-row">
+            <text wx:for="{{featured.tags}}" wx:key="*this" class="tag">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{featured.note}}" class="memory-quote">
+        <view class="memory-line"></view>
+        <view>
+          <text class="memory-copy">{{featured.note}}</text>
+          <text class="memory-date">— {{featured.dateLabel}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-heading">
+      <text class="section-heading__title">最近留下</text>
+      <text class="section-heading__meta">{{records.length}} 枚存根</text>
+    </view>
+
+    <view wx:if="{{remaining.length}}" class="record-list">
+      <view
+        wx:for="{{remaining}}"
+        wx:key="id"
+        class="compact-record paper-card"
+        data-id="{{item.id}}"
+        bindtap="openDetail"
+      >
+        <image wx:if="{{item.hasCover}}" class="compact-cover" src="{{item.cover}}" mode="{{item.coverMode}}" />
+        <view wx:else class="compact-placeholder">{{item.categorySymbol}}</view>
+        <view class="compact-content">
+          <text class="compact-kicker">{{item.categoryLabel}} · {{item.dateLabel}}</text>
+          <text class="compact-title">{{item.title}}</text>
+          <text wx:if="{{item.metadata}}" class="compact-meta">{{item.metadata}}</text>
+        </view>
+        <text class="compact-arrow">›</text>
+      </view>
+    </view>
+
+    <view wx:else class="empty-state">还没有更多存根。点击右上角的加号，上传一张真实票据。</view>
+
+    <view
+      class="primary-button add-button"
+      aria-role="button"
+      aria-label="留下一张"
+      hover-class="primary-button--pressed"
+      bindtap="openEditor"
+    >留下一张</view>
+    <text class="local-note">票据仅保存在当前微信设备中，不会上传云端。</text>
+  </view>
+</scroll-view>

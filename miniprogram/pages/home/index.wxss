@@ -1,0 +1,241 @@
+.home-screen {
+  padding-bottom: 180rpx;
+}
+
+.month-block {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-bottom: 34rpx;
+}
+
+.month-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.month-title {
+  display: block;
+  color: var(--accent-memory);
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 78rpx;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.month-caption {
+  display: block;
+  margin-top: 10rpx;
+  color: var(--text-secondary);
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 29rpx;
+}
+
+.featured-block {
+  margin-top: 34rpx;
+}
+
+.ticket-paper {
+  position: relative;
+  overflow: hidden;
+}
+
+.ticket-paper::before,
+.ticket-paper::after {
+  position: absolute;
+  z-index: 2;
+  top: 330rpx;
+  width: 34rpx;
+  height: 34rpx;
+  border-radius: 50%;
+  background: var(--bg-canvas);
+  content: "";
+}
+
+.ticket-paper::before {
+  left: -17rpx;
+}
+
+.ticket-paper::after {
+  right: -17rpx;
+}
+
+.ticket-cover {
+  display: block;
+  width: 100%;
+  height: 350rpx;
+  background: var(--bg-sunken);
+}
+
+.ticket-placeholder {
+  display: flex;
+  width: 100%;
+  height: 350rpx;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #EFE3C8, #F7EFE0);
+  color: var(--accent-memory);
+  font-family: "Songti SC", serif;
+  font-size: 110rpx;
+}
+
+.ticket-content {
+  padding: 34rpx 34rpx 38rpx;
+}
+
+.ticket-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 24rpx;
+  border-bottom: 1rpx dashed var(--border-subtle);
+}
+
+.ticket-category,
+.ticket-date {
+  color: var(--text-secondary);
+  font-size: 23rpx;
+  letter-spacing: 2rpx;
+}
+
+.ticket-category {
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+
+.ticket-title {
+  display: block;
+  margin-top: 28rpx;
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 39rpx;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.ticket-metadata {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--text-secondary);
+  font-size: 25rpx;
+  line-height: 1.5;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 28rpx;
+}
+
+.memory-quote {
+  display: flex;
+  gap: 24rpx;
+  margin: 38rpx 16rpx 10rpx;
+}
+
+.memory-line {
+  width: 7rpx;
+  border-radius: 99rpx;
+  background: var(--accent-memory);
+}
+
+.memory-copy,
+.memory-date {
+  display: block;
+  color: var(--accent-memory);
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 29rpx;
+  line-height: 1.65;
+}
+
+.memory-date {
+  margin-top: 10rpx;
+  font-size: 23rpx;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.compact-record {
+  display: flex;
+  min-height: 170rpx;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.compact-cover,
+.compact-placeholder {
+  flex: 0 0 180rpx;
+  width: 180rpx;
+  min-height: 170rpx;
+  background: var(--bg-sunken);
+}
+
+.compact-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-memory);
+  font-family: "Songti SC", serif;
+  font-size: 56rpx;
+}
+
+.compact-content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24rpx;
+}
+
+.compact-kicker {
+  color: var(--brand-primary);
+  font-size: 21rpx;
+  font-weight: 600;
+}
+
+.compact-title {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 10rpx;
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.compact-meta {
+  overflow: hidden;
+  margin-top: 10rpx;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compact-arrow {
+  display: flex;
+  align-items: center;
+  padding-right: 24rpx;
+  color: var(--text-tertiary);
+  font-size: 50rpx;
+}
+
+.add-button {
+  margin-top: 44rpx;
+}
+
+.local-note {
+  display: block;
+  margin: 20rpx auto 0;
+  color: var(--text-tertiary);
+  font-size: 22rpx;
+  text-align: center;
+}

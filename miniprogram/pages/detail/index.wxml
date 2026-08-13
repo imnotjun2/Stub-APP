@@ -1,0 +1,54 @@
+<scroll-view class="page-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="screen detail-screen" wx:if="{{record}}">
+    <view class="detail-nav">
+      <view class="back-button" aria-role="button" aria-label="返回" bindtap="goBack">‹</view>
+      <text class="detail-nav-title">存根详情</text>
+      <view class="nav-spacer"></view>
+    </view>
+
+    <view class="detail-ticket paper-card">
+      <image wx:if="{{record.hasCover}}" class="detail-cover" src="{{record.cover}}" mode="{{record.coverMode}}" />
+      <view wx:else class="detail-placeholder">{{record.categorySymbol}}</view>
+      <view class="detail-content">
+        <view class="detail-kicker-row">
+          <text class="detail-category">{{record.categoryLabel}}</text>
+          <text class="detail-date">{{record.dateLabel}}</text>
+        </view>
+        <text class="detail-title">{{record.title}}</text>
+        <view class="detail-tags">
+          <text wx:for="{{record.tags}}" wx:key="*this" class="tag">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{detailRows.length}}" class="info-card paper-card">
+      <view wx:for="{{detailRows}}" wx:key="key" class="info-row">
+        <text class="info-label">{{item.label}}</text>
+        <text class="info-value">{{item.value}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{record.note}}" class="note-card">
+      <text class="eyebrow">MEMORY NOTE</text>
+      <text class="note-copy">{{record.note}}</text>
+      <text class="note-date">— {{record.dateLabel}}</text>
+    </view>
+
+    <view
+      wx:if="{{record.source === 'user'}}"
+      class="secondary-button"
+      aria-role="button"
+      aria-label="编辑这枚存根"
+      hover-class="secondary-button--pressed"
+      bindtap="editRecord"
+    >编辑这枚存根</view>
+    <view
+      wx:if="{{record.source === 'user'}}"
+      class="delete-button"
+      aria-role="button"
+      aria-label="删除本地记录"
+      bindtap="deleteRecord"
+    >删除本地记录</view>
+    <view wx:else class="sample-note">这是一枚内置示例存根。你上传的真实存根可以编辑或删除。</view>
+  </view>
+</scroll-view>

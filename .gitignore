@@ -1,0 +1,12 @@
+# macOS metadata and local package-manager cache
+.DS_Store
+**/.DS_Store
+.pnpm-store/
+
+# Local QA artifacts
+/qa/
+/ios/qa/
+
+# Per-user Xcode workspace state
+/ios/**/xcuserdata/
+*.xcuserstate

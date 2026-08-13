@@ -1,0 +1,148 @@
+<scroll-view class="page-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="screen editor-screen">
+    <view class="editor-nav">
+      <view class="back-button" aria-role="button" aria-label="返回" bindtap="goBack">‹</view>
+      <view class="editor-heading">
+        <text class="eyebrow">{{editingId ? 'EDIT A STUB' : 'ADD A STUB'}}</text>
+        <text class="editor-title">{{editingId ? '编辑存根' : '留下一张'}}</text>
+      </view>
+      <view class="nav-spacer"></view>
+    </view>
+
+    <view class="upload-card paper-card">
+      <view wx:if="{{ticketPath}}" class="ticket-preview-wrap">
+        <image class="ticket-preview" src="{{ticketPath}}" mode="aspectFit" bindtap="previewTicket" />
+        <view class="replace-button" aria-role="button" aria-label="更换票据图片" bindtap="chooseTicket">换一张</view>
+      </view>
+      <view wx:else class="upload-empty" aria-role="button" aria-label="选择或拍摄真实票据" bindtap="chooseTicket">
+        <text class="upload-plus">＋</text>
+        <text class="upload-title">选择或拍摄真实票据</text>
+        <text class="upload-copy">支持电影票、登机牌、火车票、小票与展览票</text>
+      </view>
+    </view>
+
+    <view class="privacy-strip">
+      <text class="privacy-icon">⌂</text>
+      <text>Demo 仅保存到当前设备，不会上传云端。</text>
+    </view>
+
+    <view class="form-card paper-card">
+      <view class="form-field">
+        <text class="field-label">标题</text>
+        <input class="field-input" value="{{form.title}}" placeholder="例如：柯南首映的雨夜" bindinput="onInput" data-field="title" />
+      </view>
+
+      <view class="form-grid">
+        <view class="form-field form-field--half">
+          <text class="field-label">类型</text>
+          <picker range="{{categories}}" range-key="label" value="{{categoryIndex}}" bindchange="onCategoryChange">
+            <view class="picker-value">{{categories[categoryIndex].label}} <text>⌄</text></view>
+          </picker>
+        </view>
+        <view class="form-field form-field--half">
+          <text class="field-label">日期</text>
+          <picker mode="date" value="{{form.occurredOn}}" bindchange="onDateChange">
+            <view class="picker-value">{{form.occurredOn}} <text>⌄</text></view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="form-field">
+        <text class="field-label">地点</text>
+        <input class="field-input" value="{{form.details.location}}" placeholder="城市、影院或商店" bindinput="onInput" data-field="details.location" />
+      </view>
+
+      <block wx:if="{{form.category === 'movie'}}">
+        <view class="form-grid">
+          <view class="form-field form-field--half">
+            <text class="field-label">影院</text>
+            <input class="field-input" value="{{form.details.cinema}}" placeholder="影院名称" bindinput="onInput" data-field="details.cinema" />
+          </view>
+          <view class="form-field form-field--half">
+            <text class="field-label">影厅</text>
+            <input class="field-input" value="{{form.details.hall}}" placeholder="6号厅" bindinput="onInput" data-field="details.hall" />
+          </view>
+        </view>
+        <view class="form-field">
+          <text class="field-label">电影格式</text>
+          <view class="choice-row">
+            <view
+              wx:for="{{formatOptions}}"
+              wx:key="label"
+              class="choice-chip {{item.selected ? 'choice-chip--selected' : ''}}"
+              aria-role="button"
+              aria-label="选择电影格式{{item.label}}"
+              data-label="{{item.label}}"
+              bindtap="chooseFormat"
+            >{{item.label}}</view>
+          </view>
+        </view>
+      </block>
+
+      <block wx:if="{{form.category === 'travel'}}">
+        <view class="form-grid">
+          <view class="form-field form-field--half">
+            <text class="field-label">票据类型</text>
+            <picker range="{{subtypes}}" range-key="label" value="{{subtypeIndex}}" bindchange="onSubtypeChange">
+              <view class="picker-value">{{subtypes[subtypeIndex].label}} <text>⌄</text></view>
+            </picker>
+          </view>
+          <view class="form-field form-field--half">
+            <text class="field-label">{{form.subtype === 'flight' ? '航班号' : '车次'}}</text>
+            <input class="field-input" value="{{form.details.number}}" placeholder="MU5237" bindinput="onInput" data-field="details.number" />
+          </view>
+        </view>
+        <view class="form-grid">
+          <view class="form-field form-field--half">
+            <text class="field-label">出发</text>
+            <input class="field-input" value="{{form.details.departure}}" placeholder="SHA" bindinput="onInput" data-field="details.departure" />
+          </view>
+          <view class="form-field form-field--half">
+            <text class="field-label">到达</text>
+            <input class="field-input" value="{{form.details.arrival}}" placeholder="CTS" bindinput="onInput" data-field="details.arrival" />
+          </view>
+        </view>
+      </block>
+
+      <view class="form-field">
+        <text class="field-label">座位（选填）</text>
+        <input class="field-input" value="{{form.details.seat}}" placeholder="例如 E07 或 12A" bindinput="onInput" data-field="details.seat" />
+      </view>
+
+      <view class="form-field">
+        <text class="field-label">当时的记忆</text>
+        <textarea class="field-textarea" value="{{form.note}}" placeholder="写下一句只有你记得的话……" maxlength="240" bindinput="onInput" data-field="note" />
+      </view>
+
+      <view class="form-field">
+        <text class="field-label">快捷标签</text>
+        <view class="choice-row">
+          <view
+            wx:for="{{tagOptions}}"
+            wx:key="label"
+            class="choice-chip {{item.selected ? 'choice-chip--selected' : ''}}"
+            aria-role="button"
+            aria-label="选择标签{{item.label}}"
+            data-label="{{item.label}}"
+            bindtap="toggleTag"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <view class="form-field form-field--last">
+        <text class="field-label">加入旅册</text>
+        <picker range="{{tripOptions}}" range-key="title" value="{{tripIndex}}" bindchange="onTripChange">
+          <view class="picker-value picker-value--full">{{tripOptions[tripIndex].title}} <text>⌄</text></view>
+        </picker>
+      </view>
+    </view>
+
+    <view
+      class="primary-button save-button {{saving ? 'primary-button--disabled' : ''}}"
+      aria-role="button"
+      aria-label="{{editingId ? '保存修改' : '保存这枚存根'}}"
+      hover-class="primary-button--pressed"
+      bindtap="saveRecord"
+    >{{saving ? '正在保存…' : (editingId ? '保存修改' : '保存这枚存根')}}</view>
+  </view>
+</scroll-view>

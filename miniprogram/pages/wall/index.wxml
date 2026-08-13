@@ -1,0 +1,49 @@
+<scroll-view class="page-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="screen wall-screen">
+    <view class="brand-header wall-brand-header">
+      <view>
+        <text class="wordmark">Stub</text>
+        <text class="brand-subtitle">生活存根</text>
+      </view>
+    </view>
+
+    <text class="eyebrow">YOUR ARCHIVE</text>
+    <view class="page-title-row">
+      <text class="page-title">存根墙</text>
+      <view
+        class="content-action"
+        aria-role="button"
+        aria-label="留下一张"
+        hover-class="content-action--pressed"
+        bindtap="openEditor"
+      >＋</view>
+    </view>
+    <text class="page-description">把电影、旅行、餐桌和日常放在一起，看见生活真正留下来的样子。</text>
+
+    <scroll-view class="filter-scroll" scroll-x show-scrollbar="{{false}}">
+      <view class="filter-row">
+        <view
+          wx:for="{{filters}}"
+          wx:key="id"
+          class="filter-chip {{item.selected ? 'filter-chip--active' : ''}}"
+          aria-role="button"
+          aria-label="筛选{{item.label}}存根"
+          data-id="{{item.id}}"
+          bindtap="selectFilter"
+        >{{item.label}}</view>
+      </view>
+    </scroll-view>
+
+    <view wx:if="{{records.length}}" class="wall-grid">
+      <view wx:for="{{records}}" wx:key="id" class="wall-card paper-card" data-id="{{item.id}}" bindtap="openDetail">
+        <image wx:if="{{item.hasCover}}" class="wall-image" src="{{item.cover}}" mode="{{item.coverMode}}" />
+        <view wx:else class="wall-placeholder">{{item.categorySymbol}}</view>
+        <view class="wall-copy">
+          <text class="wall-date">{{item.dateLabel}} · {{item.categoryLabel}}</text>
+          <text class="wall-title">{{item.title}}</text>
+        </view>
+      </view>
+    </view>
+    <view wx:else class="empty-state">这个分类还没有存根。</view>
+  </view>
+</scroll-view>

@@ -1,0 +1,145 @@
+.detail-screen {
+  padding-bottom: 100rpx;
+}
+
+.detail-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 34rpx;
+}
+
+.detail-nav-title {
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.nav-spacer {
+  width: 80rpx;
+}
+
+.detail-ticket {
+  overflow: hidden;
+}
+
+.detail-cover,
+.detail-placeholder {
+  display: flex;
+  width: 100%;
+  height: 700rpx;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-sunken);
+}
+
+.detail-placeholder {
+  color: var(--accent-memory);
+  font-family: "Songti SC", serif;
+  font-size: 120rpx;
+}
+
+.detail-content {
+  padding: 36rpx;
+}
+
+.detail-kicker-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-category {
+  color: var(--brand-primary);
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.detail-date {
+  color: var(--text-tertiary);
+  font-size: 23rpx;
+}
+
+.detail-title {
+  display: block;
+  margin-top: 24rpx;
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 42rpx;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 26rpx;
+}
+
+.info-card {
+  margin-top: 26rpx;
+  padding: 10rpx 32rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 88rpx;
+  border-bottom: 1rpx solid var(--border-subtle);
+}
+
+.info-row:last-child {
+  border-bottom: 0;
+}
+
+.info-label {
+  color: var(--text-secondary);
+  font-size: 25rpx;
+}
+
+.info-value {
+  max-width: 68%;
+  font-size: 27rpx;
+  font-weight: 500;
+  text-align: right;
+}
+
+.note-card {
+  margin: 42rpx 18rpx;
+  padding-left: 26rpx;
+  border-left: 7rpx solid var(--accent-memory);
+}
+
+.note-copy,
+.note-date {
+  display: block;
+  margin-top: 18rpx;
+  color: var(--accent-memory);
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 31rpx;
+  line-height: 1.7;
+}
+
+.note-date {
+  margin-top: 12rpx;
+  font-size: 23rpx;
+}
+
+.delete-button {
+  width: 100%;
+  min-height: 86rpx;
+  margin-top: 22rpx;
+  color: #9F342F;
+  font-size: 27rpx;
+}
+
+.sample-note {
+  margin-top: 26rpx;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  background: var(--accent-soft);
+  color: var(--accent-memory);
+  font-size: 24rpx;
+  line-height: 1.6;
+  text-align: center;
+}

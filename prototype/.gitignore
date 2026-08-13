@@ -1,0 +1,9 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+qa/
+qa-*.jpg
+qa-*.png
+implementation-home-final.jpg
+.DS_Store

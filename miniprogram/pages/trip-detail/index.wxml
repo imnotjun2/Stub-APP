@@ -1,0 +1,48 @@
+<scroll-view class="page-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="screen trip-detail-screen" wx:if="{{trip}}">
+    <view class="trip-detail-nav">
+      <view class="back-button" aria-role="button" aria-label="返回" bindtap="goBack">‹</view>
+      <text class="eyebrow">TRIP BOOK</text>
+      <view class="nav-spacer"></view>
+    </view>
+
+    <image class="trip-hero" src="{{trip.cover}}" mode="aspectFill" />
+    <view class="trip-intro paper-card">
+      <text class="trip-date">{{trip.startDate}} — {{trip.endDate}}</text>
+      <text class="trip-title">{{trip.title}}</text>
+      <text class="trip-route">{{trip.route}}</text>
+      <text class="trip-note">{{trip.note}}</text>
+    </view>
+
+    <view class="section-heading">
+      <text class="section-heading__title">沿途留下</text>
+      <text class="section-heading__meta">{{items.length}} 枚</text>
+    </view>
+
+    <view wx:if="{{items.length}}" class="trip-timeline">
+      <view wx:for="{{items}}" wx:key="id" class="timeline-item" data-id="{{item.id}}" bindtap="openDetail">
+        <view class="day-marker">
+          <text class="day-label">DAY</text>
+          <text class="day-number">{{item.day}}</text>
+        </view>
+        <view class="timeline-card paper-card">
+          <image wx:if="{{item.hasCover}}" class="timeline-image" src="{{item.cover}}" mode="{{item.coverMode}}" />
+          <view class="timeline-copy">
+            <text class="timeline-date">{{item.dateLabel}} · {{item.categoryLabel}}</text>
+            <text class="timeline-title">{{item.title}}</text>
+            <text wx:if="{{item.note}}" class="timeline-note">{{item.note}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view wx:else class="empty-state">旅册还是空白的，加入一枚存根来开始这段旅行。</view>
+
+    <view
+      class="primary-button"
+      aria-role="button"
+      aria-label="为旅册留下一张"
+      hover-class="primary-button--pressed"
+      bindtap="addStub"
+    >为旅册留下一张</view>
+  </view>
+</scroll-view>

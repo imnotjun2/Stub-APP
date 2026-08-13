@@ -1,0 +1,60 @@
+<scroll-view class="page-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="screen profile-screen">
+    <view class="brand-header profile-brand-header">
+      <view>
+        <text class="wordmark">Stub</text>
+        <text class="brand-subtitle">生活存根</text>
+      </view>
+    </view>
+
+    <text class="eyebrow">YOUR ARCHIVE</text>
+    <view class="page-title-row">
+      <text class="page-title">我的</text>
+      <view class="version-pill">DEMO 0.1</view>
+    </view>
+    <text class="page-description">所有真实票据与文字都只保存在当前微信设备里。</text>
+
+    <view class="stats-card paper-card">
+      <view class="stat-item">
+        <text class="stat-number">{{recordCount}}</text>
+        <text class="stat-label">全部存根</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-number">{{userCount}}</text>
+        <text class="stat-label">真实上传</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-number">{{tripCount}}</text>
+        <text class="stat-label">本旅册</text>
+      </view>
+    </view>
+
+    <view class="section-heading">
+      <text class="section-heading__title">存储方式</text>
+    </view>
+    <view class="setting-card paper-card">
+      <view class="setting-icon setting-icon--green">⌂</view>
+      <view class="setting-copy">
+        <text class="setting-title">仅在本机保存</text>
+        <text class="setting-description">不登录、不上传服务器，也不会跨设备同步。</text>
+      </view>
+      <text class="setting-status">已开启</text>
+    </view>
+
+    <view class="notice-card">
+      <text class="notice-title">Demo 使用须知</text>
+      <text class="notice-copy">删除微信、清理小程序数据或更换手机后，本地记录可能丢失。正式版应增加加密云备份与数据导出。</text>
+    </view>
+
+    <view
+      class="secondary-button reset-button"
+      aria-role="button"
+      aria-label="恢复初始示例"
+      hover-class="secondary-button--pressed"
+      bindtap="resetDemo"
+    >恢复初始示例</view>
+    <text class="reset-caption">这会删除你在 Demo 中上传的所有本地票据。</text>
+  </view>
+</scroll-view>

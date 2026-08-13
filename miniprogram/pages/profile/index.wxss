@@ -1,0 +1,139 @@
+.profile-screen {
+  padding-bottom: 180rpx;
+}
+
+.profile-brand-header {
+  align-items: center;
+  margin-bottom: 42rpx;
+}
+
+.version-pill {
+  padding: 14rpx 20rpx;
+  border-radius: 999rpx;
+  background: var(--accent-soft);
+  color: var(--accent-memory);
+  font-family: Georgia, serif;
+  font-size: 18rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+
+.stats-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 36rpx;
+  padding: 34rpx 10rpx;
+}
+
+.stat-item {
+  display: flex;
+  min-width: 150rpx;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  color: var(--accent-memory);
+  font-family: Georgia, serif;
+  font-size: 50rpx;
+  font-weight: 700;
+}
+
+.stat-label {
+  margin-top: 7rpx;
+  color: var(--text-secondary);
+  font-size: 21rpx;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 64rpx;
+  background: var(--border-subtle);
+}
+
+.setting-card {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  padding: 28rpx;
+}
+
+.setting-icon {
+  display: flex;
+  width: 76rpx;
+  height: 76rpx;
+  flex: 0 0 76rpx;
+  align-items: center;
+  justify-content: center;
+  border-radius: 22rpx;
+  font-size: 34rpx;
+}
+
+.setting-icon--green {
+  background: #DDECE3;
+  color: #35674F;
+}
+
+.setting-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.setting-title {
+  font-size: 29rpx;
+  font-weight: 600;
+}
+
+.setting-description {
+  margin-top: 7rpx;
+  color: var(--text-secondary);
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+.setting-status {
+  color: #35674F;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.notice-card {
+  margin-top: 28rpx;
+  padding: 30rpx;
+  border: 1rpx solid #E2C99A;
+  border-radius: 26rpx;
+  background: var(--accent-soft);
+}
+
+.notice-title,
+.notice-copy {
+  display: block;
+}
+
+.notice-title {
+  color: var(--accent-memory);
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.notice-copy {
+  margin-top: 12rpx;
+  color: var(--accent-memory);
+  font-size: 23rpx;
+  line-height: 1.65;
+}
+
+.reset-button {
+  margin-top: 44rpx;
+}
+
+.reset-caption {
+  display: block;
+  margin-top: 16rpx;
+  color: #9F342F;
+  font-size: 21rpx;
+  text-align: center;
+}

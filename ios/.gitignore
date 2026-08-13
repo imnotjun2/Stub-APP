@@ -1,0 +1,7 @@
+build/
+*.xcarchive
+*.ipa
+*.dSYM.zip
+DistributionSummary.plist
+ExportOptions.plist
+Packaging.log

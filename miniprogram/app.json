@@ -1,0 +1,51 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/trips/index",
+    "pages/wall/index",
+    "pages/profile/index",
+    "pages/editor/index",
+    "pages/detail/index",
+    "pages/trip-detail/index"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#F6F1E7",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#6D6258",
+    "selectedColor": "#B94738",
+    "backgroundColor": "#FFFDF8",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "存根",
+        "iconPath": "assets/tab-stub.png",
+        "selectedIconPath": "assets/tab-stub-active.png"
+      },
+      {
+        "pagePath": "pages/trips/index",
+        "text": "旅册",
+        "iconPath": "assets/tab-trip.png",
+        "selectedIconPath": "assets/tab-trip-active.png"
+      },
+      {
+        "pagePath": "pages/wall/index",
+        "text": "墙",
+        "iconPath": "assets/tab-wall.png",
+        "selectedIconPath": "assets/tab-wall-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "assets/tab-profile.png",
+        "selectedIconPath": "assets/tab-profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

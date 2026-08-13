@@ -1,0 +1,58 @@
+<scroll-view class="page-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="screen trips-screen">
+    <view class="brand-header trips-brand-header">
+      <view>
+        <text class="wordmark">Stub</text>
+        <text class="brand-subtitle">生活存根</text>
+      </view>
+    </view>
+
+    <text class="eyebrow">TRIP BOOKS</text>
+    <view class="page-title-row">
+      <text class="page-title">旅册</text>
+      <view
+        class="content-action"
+        aria-role="button"
+        aria-label="留下一张"
+        hover-class="content-action--pressed"
+        bindtap="openEditor"
+      >＋</view>
+    </view>
+    <text class="page-description">同一枚存根只保存一次，在旅册里重新编排成一本属于你的旅行书。</text>
+
+    <view wx:if="{{primaryTrip}}" class="map-card paper-card" data-id="{{primaryTrip.id}}" bindtap="openTrip">
+      <image class="map-image" src="{{primaryTrip.cover}}" mode="aspectFill" />
+      <view class="route-pill">{{primaryTrip.route}}</view>
+      <view class="map-summary">
+        <view>
+          <text class="map-kicker">{{primaryTrip.dateRange}}</text>
+          <text class="map-title">{{primaryTrip.title}}</text>
+          <text class="map-note">{{primaryTrip.note}}</text>
+        </view>
+        <view class="map-count">
+          <text class="map-count-number">{{primaryTrip.count}}</text>
+          <text class="map-count-label">枚存根</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-heading">
+      <text class="section-heading__title">最近旅册</text>
+      <text class="section-heading__meta">{{trips.length}} 本</text>
+    </view>
+
+    <view class="book-list">
+      <view wx:for="{{trips}}" wx:key="id" class="book-card paper-card" data-id="{{item.id}}" bindtap="openTrip">
+        <image class="book-cover" src="{{item.cover}}" mode="aspectFill" />
+        <view class="book-copy">
+          <text class="book-kicker">HOKKAIDO · SUMMER 2026</text>
+          <text class="book-title">{{item.title}}</text>
+          <text class="book-route">{{item.route}} · {{item.count}} 枚存根</text>
+          <text class="book-link">打开旅册　›</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="trip-tip">第一版提供示例旅册。新增存根时可以选择把它加入这本旅册。</view>
+  </view>
+</scroll-view>

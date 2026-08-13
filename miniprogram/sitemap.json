@@ -1,0 +1,9 @@
+{
+  "desc": "Stub 本地 Demo 页面索引",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}
