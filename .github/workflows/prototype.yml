@@ -46,11 +46,14 @@ jobs:
       - name: Mobile runtime integrity check
         run: npm run check:runtime
 
-      - name: Feature and Sites worker contract tests
-        run: node --test tests/stub-feature-contract.test.mjs tests/sites-worker.test.mjs
-
       - name: Build
         run: npm run build
+
+      # 注意：契约测试里的 "emits the files required by Sites packaging"
+      # 会断言 dist/client/index.html、dist/server/index.js、dist/.openai/hosting.json
+      # 已存在 —— 所以必须先 build 再跑测试。
+      - name: Feature and Sites worker contract tests
+        run: node --test tests/stub-feature-contract.test.mjs tests/sites-worker.test.mjs
 
       - name: Assert build output exists
         run: |
