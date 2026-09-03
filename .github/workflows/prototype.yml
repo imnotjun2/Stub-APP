@@ -67,13 +67,14 @@ jobs:
           retention-days: 14
 
   # 可选：发布到 Cloudflare Pages。
-  # 只有当你配置了 CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID 两个 Secrets 时才会运行。
+  # 只在手动触发（workflow_dispatch）且位于 main 时运行 —— 避免 secrets 出现在 job 级
+  # if 表达式里（那会导致整个 workflow 编译失败、一个 job 都不生成）。
   # 若改用 Netlify 或 Vercel 的 Git 集成，请忽略这个 job —— 它们自己会在 push 时构建发布。
   deploy-cloudflare-pages:
     name: Deploy to Cloudflare Pages
     needs: verify
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && secrets.CLOUDFLARE_API_TOKEN != ''
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
       deployments: write
