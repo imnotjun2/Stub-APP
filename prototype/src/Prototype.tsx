@@ -1,6 +1,5 @@
 import {
   ArchiveIcon,
-  CalendarIcon,
   CameraIcon,
   CardStackPlusIcon,
   CheckCircledIcon,
@@ -12,7 +11,6 @@ import {
   DotsHorizontalIcon,
   DownloadIcon,
   DrawingPinIcon,
-  GlobeIcon,
   HomeIcon,
   ImageIcon,
   ListBulletIcon,
@@ -788,6 +786,129 @@ function tripTitle(trip: TripBook, locale: Locale) {
   return locale === "en" && trip.titleEn ? trip.titleEn : trip.title;
 }
 
+/* ---------- 回顾：统计与分组（纯函数，基于真实记录计算） ---------- */
+
+type ReviewPeriod = "day" | "week" | "month";
+
+function toDayKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function parseLocalDay(dateStr: string): Date {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year ?? 1970, (month ?? 1) - 1, day ?? 1);
+}
+
+function startOfWeek(date: Date): Date {
+  const result = new Date(date);
+  const offset = (result.getDay() + 6) % 7; // 周一作为一周起点
+  result.setDate(result.getDate() - offset);
+  result.setHours(0, 0, 0, 0);
+  return result;
+}
+
+function periodKeyFor(dateStr: string, period: ReviewPeriod): string {
+  if (period === "day") return dateStr;
+  const date = parseLocalDay(dateStr);
+  if (period === "week") return toDayKey(startOfWeek(date));
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function computeStreak(records: StubRecord[]): number {
+  const days = new Set(records.map((record) => record.occurredOn));
+  if (days.size === 0) return 0;
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+  if (!days.has(toDayKey(cursor))) cursor.setDate(cursor.getDate() - 1); // 今天还没记，不打断连胜
+  let streak = 0;
+  while (days.has(toDayKey(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
+function currentPeriodStart(period: ReviewPeriod): Date {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  if (period === "day") return now;
+  if (period === "week") return startOfWeek(now);
+  return new Date(now.getFullYear(), now.getMonth(), 1);
+}
+
+function countBetween(records: StubRecord[], start: Date, end: Date): number {
+  return records.reduce((total, record) => {
+    const day = parseLocalDay(record.occurredOn);
+    return day >= start && day < end ? total + 1 : total;
+  }, 0);
+}
+
+function periodStats(records: StubRecord[], period: ReviewPeriod): { current: number; previous: number; delta: number } {
+  const start = currentPeriodStart(period);
+  const end = new Date(start);
+  const prevStart = new Date(start);
+  if (period === "day") {
+    end.setDate(end.getDate() + 1);
+    prevStart.setDate(prevStart.getDate() - 1);
+  } else if (period === "week") {
+    end.setDate(end.getDate() + 7);
+    prevStart.setDate(prevStart.getDate() - 7);
+  } else {
+    end.setMonth(end.getMonth() + 1);
+    prevStart.setMonth(prevStart.getMonth() - 1);
+  }
+  const current = countBetween(records, start, end);
+  const previous = countBetween(records, prevStart, start);
+  return { current, previous, delta: current - previous };
+}
+
+type ReviewGroup = { key: string; label: string; records: StubRecord[] };
+
+function reviewGroupLabel(key: string, period: ReviewPeriod, locale: Locale, todayKey: string): string {
+  const zh = locale === "zh";
+  if (period === "day") {
+    if (key === todayKey) return zh ? "今天" : "Today";
+    const yesterday = new Date();
+    yesterday.setHours(0, 0, 0, 0);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (key === toDayKey(yesterday)) return zh ? "昨天" : "Yesterday";
+    return formatDate(key, locale);
+  }
+  if (period === "week") {
+    if (key === toDayKey(startOfWeek(new Date()))) return zh ? "本周" : "This week";
+    const lastWeek = new Date();
+    lastWeek.setDate(lastWeek.getDate() - 7);
+    if (key === toDayKey(startOfWeek(lastWeek))) return zh ? "上周" : "Last week";
+    const start = parseLocalDay(key);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6);
+    const fmt = (d: Date) => (zh ? `${d.getMonth() + 1}月${d.getDate()}日` : `${d.getMonth() + 1}/${d.getDate()}`);
+    return `${fmt(start)} – ${fmt(end)}`;
+  }
+  const [year, month] = key.split("-").map(Number);
+  return zh
+    ? `${year}年${month}月`
+    : new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long" }).format(new Date(year ?? 1970, (month ?? 1) - 1, 1));
+}
+
+function buildReviewGroups(records: StubRecord[], period: ReviewPeriod, locale: Locale): ReviewGroup[] {
+  const todayKey = toDayKey(new Date());
+  const map = new Map<string, StubRecord[]>();
+  for (const record of records) {
+    const key = periodKeyFor(record.occurredOn, period);
+    const bucket = map.get(key);
+    if (bucket) bucket.push(record);
+    else map.set(key, [record]);
+  }
+  return [...map.entries()]
+    .map(([key, groupRecords]) => ({
+      key,
+      label: reviewGroupLabel(key, period, locale, todayKey),
+      records: groupRecords.sort((a, b) => (a.occurredOn < b.occurredOn ? 1 : -1)),
+    }))
+    .sort((a, b) => (a.key < b.key ? 1 : -1));
+}
+
 function ScreenHeader({ title, onBack, action }: { title: string; onBack: () => void; action?: React.ReactNode }) {
   return (
     <header className="subpage-header">
@@ -902,6 +1023,8 @@ export default function Prototype() {
   const [tripPickerOpen, setTripPickerOpen] = useState(false);
   const [tripCreateOpen, setTripCreateOpen] = useState(false);
   const [plusOpen, setPlusOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [reviewPeriod, setReviewPeriod] = useState<ReviewPeriod>("week");
   const [newTrip, setNewTrip] = useState({ title: "", startDate: getLocalDate(), endDate: getLocalDate(), route: "", note: "" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -943,6 +1066,9 @@ export default function Prototype() {
       .filter((value): value is { item: TripItem; record: StubRecord } => Boolean(value.record)),
     [allTripItems, allRecords, selectedTrip.id],
   );
+  const reviewStreak = useMemo(() => computeStreak(allRecords), [allRecords]);
+  const reviewStats = useMemo(() => periodStats(allRecords, reviewPeriod), [allRecords, reviewPeriod]);
+  const reviewGroups = useMemo(() => buildReviewGroups(allRecords, reviewPeriod, locale), [allRecords, reviewPeriod, locale]);
   const resolvedTheme = theme === "system" ? (systemDark ? "dark" : "light") : theme;
   const txt = (zh: string, en: string) => (locale === "zh" ? zh : en);
   const posterCandidate = posterCandidateFor(draft.title);
@@ -1595,36 +1721,100 @@ export default function Prototype() {
       {page === "profile" ? (
         <>
           <MobileScroll key="profile" className="app-screen stub-scroll">
-            <main className="profile-page" data-testid="profile-screen">
-              {renderBrandHeader(false)}
-              <section className="profile-intro"><p className="section-eyebrow">YOUR ARCHIVE</p><h1>{txt("我的存根盒", "My Stub Box")}</h1><p>{txt("只属于你的本地生活档案。", "A private, local archive of your life.")}</p></section>
-              <section className="stats-card">
-                <span><strong>{allRecords.length}</strong><small>{txt("枚存根", "stubs")}</small></span>
-                <span><strong>{allTrips.length}</strong><small>{txt("本旅册", "trip books")}</small></span>
-                <span><strong>{new Set(allRecords.flatMap((record) => record.tags)).size}</strong><small>{txt("个标签", "tags")}</small></span>
-              </section>
-              <section className="settings-section">
-                <h2>{txt("外观", "Appearance")}</h2>
-                <div className="theme-grid">
-                  {themeOptions.map((option) => (
-                    <button key={option.id} type="button" aria-pressed={theme === option.id} className={theme === option.id ? "theme-option selected" : "theme-option"} onClick={() => setTheme(option.id)}>
-                      {option.icon}<span>{locale === "zh" ? option.zh : option.en}</span>{theme === option.id ? <CheckCircledIcon /> : null}
-                    </button>
-                  ))}
+            <main className="profile-page review-main" data-testid="profile-screen">
+              <header className="brand-header">
+                <div>
+                  <p className="brand-name">Stub</p>
+                  <p className="brand-cn">{txt("生活存根", "LIFE ARCHIVE")}</p>
                 </div>
-                <button className="settings-row" type="button" aria-pressed={locale === "en"} onClick={() => setLocale((value) => (value === "zh" ? "en" : "zh"))}><GlobeIcon /><span><strong>{txt("界面语言", "Interface language")}</strong><small>{locale === "zh" ? "简体中文" : "English"}</small></span><b>{locale === "zh" ? "EN" : "中"}</b></button>
+                <div className="header-tools">
+                  <button className="mini-language" type="button" onClick={() => setLocale((value) => (value === "zh" ? "en" : "zh"))} aria-label={txt("切换英文", "Switch to Chinese")} aria-pressed={locale === "en"}>
+                    {locale === "zh" ? "EN" : "中"}
+                  </button>
+                  <button className="icon-button" type="button" onClick={() => setSettingsOpen(true)} aria-label={txt("偏好设置", "Preferences")} data-testid="settings-button">
+                    <MixerHorizontalIcon width={22} height={22} />
+                  </button>
+                </div>
+              </header>
+
+              <section className="review-hero">
+                <p className="section-eyebrow">{txt("REVIEW", "REVIEW")}</p>
+                <h1>{txt("回顾", "Review")}</h1>
+                <p>{txt("回看这一路留下的存根，和那些被你记住的日子。", "Look back on the stubs you kept, and the days they remember.")}</p>
               </section>
-              <section className="settings-section">
-                <h2>{txt("资料", "Library")}</h2>
-                <div className="privacy-card"><LockClosedIcon /><div><strong>{txt("本地保存", "Private by default")}</strong><p>{txt("原图与照片保存在这个浏览器的 IndexedDB 中；旧版两张票据的 localStorage 底稿不会被删除。", "Images stay in this browser's IndexedDB. The legacy localStorage copy is kept untouched as a fallback.")}</p></div></div>
-                <button className="settings-row" type="button" onClick={exportArchive}><DownloadIcon /><span><strong>{txt("导出资料索引", "Export archive index")}</strong><small>{txt("JSON，不含图片原件", "JSON, without image binaries")}</small></span><ChevronRightIcon /></button>
-              </section>
-              <section className="plus-card">
-                <span className="plus-badge">STUB+</span>
-                <h2>{txt("持续服务，才适合订阅", "Subscribe only for ongoing value")}</h2>
-                <p>{txt("未来可为云同步、OCR 自动补全、电影/航班信息额度、年度回顾与高级旅册模板付费；本地手动收藏保持免费。", "Future paid value can cover cloud sync, OCR and enrichment credits, annual recaps and premium trip-book templates. Local manual collecting stays free.")}</p>
-                <button type="button" onClick={() => setPlusOpen(true)}>{txt("查看盈利方案", "View business model")}<ChevronRightIcon /></button>
-              </section>
+
+              {loading ? (
+                <section className="loading-paper"><span />{txt("正在整理你的回顾…", "Putting together your review…")}</section>
+              ) : allRecords.length === 0 ? (
+                <section className="empty-state review-empty">
+                  <span className="empty-icon" aria-hidden="true"><ArchiveIcon width={30} height={30} /></span>
+                  <h2>{txt("还没有可回顾的存根", "Nothing to review yet")}</h2>
+                  <p>{txt("留下第一张存根，这里就会慢慢长出你的回顾。", "Add your first stub and your review will grow here.")}</p>
+                  <button type="button" onClick={() => navigate("import")}>{txt("去留下一张", "Add a stub")}</button>
+                </section>
+              ) : (
+                <>
+                  <section className="review-stats" aria-label={txt("统计概览", "Statistics")}>
+                    <div className="review-stat">
+                      <strong>{allRecords.length}</strong>
+                      <small>{txt("累计存根", "total stubs")}</small>
+                    </div>
+                    <div className="review-stat">
+                      <strong>{reviewStreak}</strong>
+                      <small>{txt("连续天数", "day streak")}</small>
+                    </div>
+                    <div className="review-stat">
+                      <strong>{reviewStats.current}</strong>
+                      <small>{reviewPeriod === "day" ? txt("今天新增", "today") : reviewPeriod === "week" ? txt("本周新增", "this week") : txt("本月新增", "this month")}</small>
+                    </div>
+                    <div className="review-stat">
+                      <strong className={reviewStats.delta > 0 ? "trend-up" : reviewStats.delta < 0 ? "trend-down" : "trend-flat"}>
+                        {reviewStats.delta > 0 ? `+${reviewStats.delta}` : reviewStats.delta}
+                      </strong>
+                      <small>{reviewPeriod === "day" ? txt("较昨天", "vs yesterday") : reviewPeriod === "week" ? txt("较上周", "vs last week") : txt("较上月", "vs last month")}</small>
+                    </div>
+                  </section>
+
+                  <div className="review-period-tabs" role="tablist" aria-label={txt("按周期查看", "Group by period")}>
+                    {(["day", "week", "month"] as ReviewPeriod[]).map((period) => (
+                      <button
+                        key={period}
+                        type="button"
+                        role="tab"
+                        aria-selected={reviewPeriod === period}
+                        className={reviewPeriod === period ? "period-tab selected" : "period-tab"}
+                        onClick={() => setReviewPeriod(period)}
+                      >
+                        {period === "day" ? txt("日", "Day") : period === "week" ? txt("周", "Week") : txt("月", "Month")}
+                      </button>
+                    ))}
+                  </div>
+
+                  <section className="review-groups" aria-label={txt("历史回顾", "History")}>
+                    {reviewGroups.map((group) => (
+                      <section className="review-group" key={group.key}>
+                        <header className="review-group-header">
+                          <h2>{group.label}</h2>
+                          <span>{txt(`${group.records.length} 枚`, `${group.records.length}`)}</span>
+                        </header>
+                        <div className="review-group-list">
+                          {group.records.map((record) => (
+                            <button className="review-item" type="button" key={record.id} onClick={() => openDetail(record.id, "profile")} aria-label={`${txt("查看", "View")} ${recordTitle(record, locale)}`}>
+                              <img className="review-item-thumb" src={mediaUrl(record.primaryMediaId)} alt={recordTitle(record, locale)} draggable={false} />
+                              <span className="review-item-copy">
+                                <small>{categoryLabel(record.category, locale)} · {formatDate(record.occurredOn, locale)}</small>
+                                <strong>{recordTitle(record, locale)}</strong>
+                                {record.tags.length ? <em>{record.tags.slice(0, 3).map((tag) => tagLabel(tag, locale)).join(" · ")}</em> : null}
+                              </span>
+                              <ChevronRightIcon />
+                            </button>
+                          ))}
+                        </div>
+                      </section>
+                    ))}
+                  </section>
+                </>
+              )}
             </main>
           </MobileScroll>
           <BottomNav active="profile" locale={locale} onNavigate={navigateMain} onAdd={() => navigate("import")} />
@@ -1785,6 +1975,30 @@ export default function Prototype() {
           </main>
         </MobileScroll>
       ) : null}
+
+      <BottomSheet open={settingsOpen} onOpenChange={setSettingsOpen} title={txt("偏好设置", "Preferences")} description={txt("外观与资料都保存在这个浏览器里。", "Appearance and library stay in this browser.")}>
+        <div className="settings-sheet">
+          <section className="settings-section">
+            <h2>{txt("外观", "Appearance")}</h2>
+            <div className="theme-grid">
+              {themeOptions.map((option) => (
+                <button key={option.id} type="button" aria-pressed={theme === option.id} className={theme === option.id ? "theme-option selected" : "theme-option"} onClick={() => setTheme(option.id)}>
+                  {option.icon}<span>{locale === "zh" ? option.zh : option.en}</span>{theme === option.id ? <CheckCircledIcon /> : null}
+                </button>
+              ))}
+            </div>
+          </section>
+          <section className="settings-section">
+            <h2>{txt("资料", "Library")}</h2>
+            <div className="privacy-card"><LockClosedIcon /><div><strong>{txt("本地保存", "Private by default")}</strong><p>{txt("原图与照片保存在这个浏览器的 IndexedDB 中；旧版两张票据的 localStorage 底稿不会被删除。", "Images stay in this browser's IndexedDB. The legacy localStorage copy is kept untouched as a fallback.")}</p></div></div>
+            <button className="settings-row" type="button" onClick={exportArchive}><DownloadIcon /><span><strong>{txt("导出资料索引", "Export archive index")}</strong><small>{txt("JSON，不含图片原件", "JSON, without image binaries")}</small></span><ChevronRightIcon /></button>
+          </section>
+          <section className="settings-section">
+            <h2>{txt("关于", "About")}</h2>
+            <button className="settings-row" type="button" onClick={() => { setSettingsOpen(false); setPlusOpen(true); }}><span className="plus-badge">STUB+</span><span><strong>{txt("盈利方案", "Business model")}</strong><small>{txt("持续服务，才适合订阅", "Subscribe only for ongoing value")}</small></span><ChevronRightIcon /></button>
+          </section>
+        </div>
+      </BottomSheet>
 
       <BottomSheet open={filterOpen} onOpenChange={setFilterOpen} title={txt("筛选存根", "Filter stubs")} description={txt("类型和标签可以组合筛选。", "Combine a category with a personal tag.")}>
         <div className="filter-sheet"><fieldset className="type-field"><legend>{txt("类型", "Category")}</legend><div className="type-options">{["all", ...categoryIds].map((value) => <button type="button" key={value} className={filter === value ? "type-chip selected" : "type-chip"} onClick={() => setFilter(value as CategoryId | "all")}>{value === "all" ? txt("全部", "All") : categoryLabel(value as CategoryId, locale)}</button>)}</div></fieldset>{availableTags.length ? <fieldset className="type-field"><legend>{txt("标签", "Tag")}</legend><div className="type-options"><button type="button" className={tagFilter === "all" ? "type-chip selected" : "type-chip"} onClick={() => setTagFilter("all")}>{txt("全部标签", "All tags")}</button>{availableTags.map((tag) => <button type="button" key={tag} className={tagFilter === tag ? "type-chip selected" : "type-chip"} onClick={() => setTagFilter(tag)}>{tagLabel(tag, locale)}</button>)}</div></fieldset> : null}<button className="primary-cta filter-apply" type="button" onClick={() => setFilterOpen(false)}>{txt("查看结果", "Show results")}</button></div>
