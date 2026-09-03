@@ -1927,6 +1927,197 @@ button {
   }
 }
 
+/* ============================================================
+   作品集精修层 · Portfolio Polish Layer
+   在不改动既有结构 / 运行时逻辑的前提下集中做四件事：
+     1. 字体排版系统（衬线/无衬线分工 + 抗锯齿）
+     2. 间距 / 圆角 / 阴影分层 token（4px 阶梯 + 三级阴影）
+     3. 交互微动效（hover / active / focus-visible / 弹簧手感）
+     4. 响应式补充（平板 600-959px / 超宽屏 ≥1440px）
+   既有颜色 token 与组件结构保持不变（契约测试约束）。
+   ============================================================ */
+
+/* ---------- 1. 字体排版 + 间距/阴影 token ---------- */
+
+:root {
+  --font-display: Georgia, "Times New Roman", "Songti SC", "STSong", "SimSun", serif;
+  --font-cn-serif: "Songti SC", "STSong", "SimSun", Georgia, serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+
+  /* 间距阶梯（4px 基准） */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  /* 阴影分层：静置卡片 → 悬停浮起 → 弹层 */
+  --shadow-card: 0 1px 2px var(--stub-shadow-soft), 0 6px 18px var(--stub-shadow-soft);
+  --shadow-lift: 0 4px 10px var(--stub-shadow-soft), 0 18px 38px var(--stub-shadow);
+  --shadow-pop: 0 12px 28px var(--stub-shadow), 0 2px 6px var(--stub-shadow-soft);
+}
+
+.stub-app {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 文字选中色贴合品牌 */
+.stub-app ::selection {
+  background: var(--stub-brand-soft);
+  color: var(--stub-brand-ink);
+}
+
+/* ---------- 2. 交互微动效 ---------- */
+
+/* 可点元素统一的过渡：位移带回弹，颜色/阴影平滑 */
+.ticket-button,
+.compact-caption,
+.nav-item,
+.nav-add,
+.icon-button,
+.mini-language,
+.primary-cta,
+.secondary-action,
+.segmented-control button,
+.wall-filter,
+.wall-tile,
+.trip-cover-card,
+.trip-picker > button,
+.tag-input-row button,
+.empty-state button,
+.empty-book button {
+  transition: transform 200ms cubic-bezier(0.34, 1.45, 0.64, 1),
+    box-shadow 220ms ease, background-color 180ms ease, color 180ms ease,
+    border-color 180ms ease, opacity 180ms ease;
+}
+
+/* 图片统一过渡（卡片 hover 缩放的基础） */
+.wall-tile > img,
+.trip-cover-card > img,
+.ticket-image {
+  transition: transform 260ms cubic-bezier(0.34, 1.25, 0.64, 1), box-shadow 280ms ease;
+}
+
+/* 键盘可达时的焦点高亮（不影响鼠标/触摸用户） */
+:focus-visible {
+  outline: 2px solid var(--stub-brand);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* 悬停反馈：仅在有指针精度的设备启用，避免触屏"粘滞 hover" */
+@media (hover: hover) and (pointer: fine) {
+  .ticket-button:hover .ticket-image {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lift);
+  }
+  .compact-caption:hover {
+    opacity: 0.72;
+  }
+  .nav-item:hover {
+    color: var(--stub-ink);
+  }
+  .icon-button:hover,
+  .mini-language:hover {
+    background: var(--stub-surface-muted);
+    border-color: var(--stub-ink);
+  }
+  .secondary-action:hover {
+    border-color: var(--stub-border-strong);
+    box-shadow: var(--shadow-card);
+  }
+  .wall-filter:hover {
+    border-color: var(--stub-border-strong);
+  }
+  .wall-tile:hover > img {
+    transform: scale(1.02);
+  }
+  .trip-cover-card:hover {
+    box-shadow: var(--shadow-lift);
+  }
+  .trip-picker > button:hover {
+    background: var(--stub-surface-muted);
+  }
+  .segmented-control button:not(.selected):hover {
+    color: var(--stub-ink);
+  }
+  .empty-state button:hover,
+  .empty-book button:hover {
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* 按下反馈：全设备通用的"弹簧"手感 */
+.ticket-button:active .ticket-image {
+  transform: scale(0.985);
+}
+.compact-caption:active {
+  opacity: 0.6;
+}
+.nav-item:active {
+  transform: scale(0.92);
+}
+.nav-add:active,
+.icon-button:active,
+.mini-language:active {
+  transform: scale(0.9);
+}
+.primary-cta:active {
+  transform: translateY(1px) scale(0.99);
+}
+.secondary-action:active {
+  transform: scale(0.99);
+  background: var(--stub-surface-muted);
+}
+.wall-filter:active {
+  transform: scale(0.95);
+}
+.wall-tile:active {
+  transform: scale(0.98);
+}
+.trip-picker > button:active {
+  transform: scale(0.99);
+}
+
+/* ---------- 3. 响应式补充 ---------- */
+
+/* 平板（600-959px）：内容限宽居中，避免拉伸 */
+@media (min-width: 600px) and (max-width: 959px) {
+  .web-screen .stub-home,
+  .web-screen .trip-home,
+  .web-screen .wall-page,
+  .web-screen .profile-page,
+  .web-screen .subpage {
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* 超宽屏（≥1440px）：内容适度加宽，避免过窄 */
+@media (min-width: 1440px) {
+  .web-screen .stub-home,
+  .web-screen .trip-home,
+  .web-screen .profile-page,
+  .web-screen .subpage {
+    width: min(100%, 860px);
+  }
+  .web-screen .wall-page {
+    width: min(100%, 1080px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1934,5 +2125,504 @@ button {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   Portfolio polish layer (appended, additive only)
+   Motion system, interaction feedback, elevation rhythm, responsive coverage.
+   No existing rules above are modified; this layer only refines on top.
+   ========================================================================== */
+
+:root {
+  --stub-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --stub-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --stub-dur-fast: 140ms;
+  --stub-dur-med: 240ms;
+  --stub-dur-slow: 380ms;
+  --stub-lift-shadow: 0 14px 30px rgba(55, 43, 31, 0.18), 0 4px 10px rgba(55, 43, 31, 0.1);
+}
+
+:root[data-stub-theme="dark"] {
+  --stub-lift-shadow: 0 14px 30px rgba(0, 0, 0, 0.42), 0 4px 10px rgba(0, 0, 0, 0.26);
+}
+
+/* ---------- Global interactive affordance ---------- */
+
+.stub-app button {
+  transition:
+    transform var(--stub-dur-fast) var(--stub-ease-standard),
+    box-shadow var(--stub-dur-fast) var(--stub-ease-standard),
+    background-color var(--stub-dur-fast) var(--stub-ease-standard),
+    border-color var(--stub-dur-fast) var(--stub-ease-standard),
+    color var(--stub-dur-fast) var(--stub-ease-standard),
+    opacity var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+.stub-app img {
+  transition: transform var(--stub-dur-med) var(--stub-ease-standard);
+}
+
+/* Focus ring: consistent, on-brand, keyboard-only (pointer focus stays clean) */
+.stub-app button:focus-visible,
+.stub-app input:focus-visible,
+.stub-app textarea:focus-visible {
+  outline: 2px solid var(--stub-brand);
+  outline-offset: 2px;
+}
+
+/* ---------- Navigation ---------- */
+
+.nav-item {
+  position: relative;
+  border-radius: 12px;
+}
+
+@media (hover: hover) {
+  .nav-item:not(.active):hover {
+    color: var(--stub-ink);
+    background: var(--stub-surface-muted);
+  }
+
+  .web-screen .nav-item:not(.active):hover {
+    background: var(--stub-surface-muted);
+  }
+}
+
+.nav-item:active {
+  transform: scale(0.94);
+}
+
+.nav-add {
+  transition:
+    transform var(--stub-dur-fast) var(--stub-ease-emphasized),
+    box-shadow var(--stub-dur-fast) var(--stub-ease-standard),
+    background-color var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .nav-add:hover {
+    background: var(--stub-brand-pressed);
+    box-shadow: 0 12px 26px rgba(169, 64, 48, 0.34);
+    transform: translateY(-2px);
+  }
+}
+
+.nav-add:active {
+  transform: scale(0.92);
+}
+
+/* ---------- Header tools ---------- */
+
+@media (hover: hover) {
+  .icon-button:hover,
+  .mini-language:hover {
+    border-color: var(--stub-brand);
+    color: var(--stub-brand-ink);
+    background: var(--stub-brand-soft);
+  }
+}
+
+.icon-button:active,
+.mini-language:active {
+  transform: scale(0.94);
+}
+
+/* ---------- Primary / secondary actions ---------- */
+
+.primary-cta,
+.secondary-action {
+  transition:
+    transform var(--stub-dur-fast) var(--stub-ease-emphasized),
+    box-shadow var(--stub-dur-med) var(--stub-ease-standard),
+    background-color var(--stub-dur-fast) var(--stub-ease-standard),
+    border-color var(--stub-dur-fast) var(--stub-ease-standard),
+    opacity var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .primary-cta:not(:disabled):hover {
+    background: var(--stub-brand-pressed);
+    box-shadow: 0 10px 24px rgba(169, 64, 48, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .secondary-action:not(:disabled):hover {
+    border-color: var(--stub-border-strong);
+    background: var(--stub-surface-raised);
+    box-shadow: 0 8px 18px var(--stub-shadow-soft);
+    transform: translateY(-1px);
+  }
+}
+
+.primary-cta:not(:disabled):active,
+.secondary-action:not(:disabled):active {
+  transform: translateY(1px) scale(0.985);
+}
+
+/* ---------- Timeline tickets ---------- */
+
+.ticket-button {
+  border-radius: 12px;
+}
+
+.ticket-image {
+  transition:
+    transform var(--stub-dur-med) var(--stub-ease-emphasized),
+    box-shadow var(--stub-dur-med) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .ticket-button:hover .ticket-image {
+    transform: translateY(-3px);
+    box-shadow: var(--stub-lift-shadow);
+  }
+}
+
+.ticket-button:active .ticket-image {
+  transform: scale(0.985);
+  transition-duration: var(--stub-dur-fast);
+}
+
+.compact-entry {
+  transition: border-color var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .compact-caption:hover strong {
+    color: var(--stub-brand-ink);
+  }
+}
+
+/* ---------- Filters, chips, segmented controls ---------- */
+
+.wall-filter,
+.type-chip,
+.segmented-control button,
+.theme-option {
+  transition:
+    transform var(--stub-dur-fast) var(--stub-ease-standard),
+    background-color var(--stub-dur-fast) var(--stub-ease-standard),
+    border-color var(--stub-dur-fast) var(--stub-ease-standard),
+    color var(--stub-dur-fast) var(--stub-ease-standard),
+    box-shadow var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .wall-filter:not(.selected):hover,
+  .type-chip:not(.selected):hover {
+    border-color: var(--stub-border-strong);
+    color: var(--stub-ink);
+    transform: translateY(-1px);
+  }
+
+  .theme-option:not(.selected):hover {
+    border-color: var(--stub-border-strong);
+    color: var(--stub-ink);
+  }
+
+  .segmented-control button:not(.selected):hover {
+    color: var(--stub-ink);
+  }
+}
+
+.wall-filter:active,
+.type-chip:active,
+.theme-option:active {
+  transform: scale(0.96);
+}
+
+/* ---------- Cards: wall, trips, shelf, stats, settings ---------- */
+
+.wall-tile,
+.trip-cover-card,
+.shelf-book,
+.stats-card,
+.settings-row,
+.flight-card,
+.book-page,
+.poster-match,
+.travel-type-prompt,
+.poster-no-match,
+.canonical-note,
+.privacy-card,
+.new-book-card {
+  transition:
+    transform var(--stub-dur-med) var(--stub-ease-emphasized),
+    box-shadow var(--stub-dur-med) var(--stub-ease-standard),
+    border-color var(--stub-dur-fast) var(--stub-ease-standard),
+    background-color var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .wall-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--stub-lift-shadow);
+  }
+
+  .wall-tile:hover > img {
+    transform: scale(1.02);
+  }
+
+  .trip-cover-card:hover,
+  .shelf-book:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--stub-lift-shadow);
+    border-color: var(--stub-border-strong);
+  }
+
+  .settings-row:hover,
+  .new-book-card:hover {
+    border-color: var(--stub-border-strong);
+    background: var(--stub-surface-raised);
+  }
+
+  .new-book-card:hover {
+    color: var(--stub-brand-ink);
+    border-color: var(--stub-brand);
+  }
+
+  .poster-match:hover,
+  .book-artifact:hover img {
+    box-shadow: var(--stub-lift-shadow);
+  }
+}
+
+.wall-tile:active,
+.trip-cover-card:active,
+.shelf-book:active {
+  transform: scale(0.985);
+  transition-duration: var(--stub-dur-fast);
+}
+
+/* ---------- Map labels ---------- */
+
+.map-label {
+  transition:
+    transform var(--stub-dur-fast) var(--stub-ease-emphasized),
+    border-color var(--stub-dur-fast) var(--stub-ease-standard),
+    box-shadow var(--stub-dur-fast) var(--stub-ease-standard),
+    color var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .map-label:hover {
+    transform: translateY(-2px);
+    border-color: var(--stub-brand);
+    box-shadow: 0 8px 18px var(--stub-shadow);
+  }
+}
+
+.map-label:active {
+  transform: scale(0.95);
+}
+
+.map-chapter-card {
+  transition:
+    transform var(--stub-dur-med) var(--stub-ease-emphasized),
+    box-shadow var(--stub-dur-med) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .map-chapter-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--stub-lift-shadow);
+  }
+}
+
+/* ---------- Sheet list rows & misc buttons ---------- */
+
+.filter-option,
+.trip-picker > button {
+  transition:
+    background-color var(--stub-dur-fast) var(--stub-ease-standard),
+    color var(--stub-dur-fast) var(--stub-ease-standard),
+    padding var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .filter-option:hover,
+  .trip-picker > button:hover {
+    background: var(--stub-surface-muted);
+  }
+}
+
+.empty-state button,
+.empty-book button,
+.tag-input-row button,
+.add-photo-button,
+.poster-match button,
+.poster-no-match button,
+.plus-card button,
+.book-caption button,
+.delete-button {
+  transition:
+    transform var(--stub-dur-fast) var(--stub-ease-standard),
+    background-color var(--stub-dur-fast) var(--stub-ease-standard),
+    border-color var(--stub-dur-fast) var(--stub-ease-standard),
+    color var(--stub-dur-fast) var(--stub-ease-standard),
+    opacity var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .empty-state button:hover,
+  .empty-book button:hover,
+  .tag-input-row button:hover,
+  .add-photo-button:hover {
+    border-color: var(--stub-brand);
+    background: var(--stub-brand-soft);
+    transform: translateY(-1px);
+  }
+
+  .delete-button:hover {
+    background: var(--stub-brand-soft);
+    border-radius: 10px;
+  }
+}
+
+.delete-button:active,
+.empty-state button:active,
+.empty-book button:active {
+  transform: scale(0.96);
+}
+
+/* ---------- Attachment thumbnails ---------- */
+
+.attachment-track figure {
+  transition:
+    transform var(--stub-dur-fast) var(--stub-ease-standard),
+    box-shadow var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .attachment-track figure:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px var(--stub-shadow-soft);
+  }
+}
+
+.attachment-track figure button {
+  transition:
+    transform var(--stub-dur-fast) var(--stub-ease-standard),
+    background-color var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+.attachment-track figure button:active {
+  transform: scale(0.88);
+}
+
+/* ---------- Inputs ---------- */
+
+.form-field input,
+.form-field textarea,
+.tag-input-row input {
+  transition:
+    border-color var(--stub-dur-fast) var(--stub-ease-standard),
+    box-shadow var(--stub-dur-fast) var(--stub-ease-standard),
+    background-color var(--stub-dur-fast) var(--stub-ease-standard);
+}
+
+@media (hover: hover) {
+  .form-field input:hover:not(:focus),
+  .form-field textarea:hover:not(:focus),
+  .tag-input-row input:hover:not(:focus) {
+    border-color: var(--stub-border-strong);
+  }
+}
+
+/* ---------- Toast entrance ---------- */
+
+.toast {
+  animation: stub-toast-in 300ms var(--stub-ease-emphasized);
+}
+
+@keyframes stub-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* ---------- Screen entrance (subtle, once per mount) ---------- */
+
+.app-screen > .stub-home,
+.app-screen > .trip-home,
+.app-screen > .wall-page,
+.app-screen > .profile-page,
+.app-screen > .subpage {
+  animation: stub-screen-in 320ms var(--stub-ease-standard);
+}
+
+@keyframes stub-screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Responsive: small tablets & large phones (541-959px) ---------- */
+
+@media (min-width: 541px) and (max-width: 959px) {
+  .web-screen .stub-home,
+  .web-screen .trip-home,
+  .web-screen .wall-page,
+  .web-screen .profile-page,
+  .web-screen .subpage {
+    width: min(100%, 640px);
+  }
+
+  .web-screen .stub-wall {
+    columns: 3;
+    column-gap: 13px;
+  }
+
+  .web-screen .map-canvas {
+    height: 340px;
+  }
+}
+
+/* ---------- Responsive: ultra-wide (>=1600px) ---------- */
+
+@media (min-width: 1600px) {
+  .web-screen .stub-home,
+  .web-screen .trip-home,
+  .web-screen .profile-page,
+  .web-screen .subpage {
+    width: min(100%, 880px);
+  }
+
+  .web-screen .wall-page {
+    width: min(100%, 1180px);
+  }
+
+  .web-screen .stub-wall {
+    columns: 4;
+    column-gap: 16px;
+  }
+}
+
+/* ---------- Dark-mode: interactive parity ---------- */
+
+.stub-app[data-theme="dark"] .icon-button:active,
+.stub-app[data-theme="dark"] .mini-language:active,
+:root[data-stub-theme="dark"] .icon-button:active,
+:root[data-stub-theme="dark"] .mini-language:active {
+  background: var(--stub-surface-muted);
+}
+
+@media (hover: hover) {
+  .stub-app[data-theme="dark"] .filter-option:hover,
+  .stub-app[data-theme="dark"] .trip-picker > button:hover,
+  :root[data-stub-theme="dark"] .filter-option:hover,
+  :root[data-stub-theme="dark"] .trip-picker > button:hover {
+    background: var(--stub-surface-muted);
   }
 }
