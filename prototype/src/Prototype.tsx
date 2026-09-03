@@ -851,17 +851,18 @@ function BottomNav({
     { id: "home", zh: "存根", en: "Stubs", icon: <HomeIcon /> },
     { id: "trips", zh: "旅册", en: "Trips", icon: <ReaderIcon /> },
     { id: "wall", zh: "墙", en: "Wall", icon: <DashboardIcon /> },
-    { id: "profile", zh: "我的", en: "Me", icon: <PersonIcon /> },
+    { id: "profile", zh: "回顾", en: "Review", icon: <PersonIcon /> },
   ];
   return (
     <nav className="bottom-nav" aria-label={locale === "zh" ? "主导航" : "Main navigation"}>
+      <span className="nav-rail-brand" aria-hidden="true">Stub<small>{locale === "zh" ? "生活存根" : "LIFE ARCHIVE"}</small></span>
       {items.slice(0, 2).map((item) => (
         <button key={item.id} type="button" className={active === item.id ? "nav-item active" : "nav-item"} onClick={() => onNavigate(item.id)}>
           {item.icon}<span>{locale === "zh" ? item.zh : item.en}</span>
         </button>
       ))}
       <button className="nav-add" type="button" onClick={onAdd} aria-label={locale === "zh" ? "留下一张" : "Add a stub"}>
-        <PlusIcon width={25} height={25} />
+        <PlusIcon width={25} height={25} /><span className="nav-add-label">{locale === "zh" ? "留下一张" : "Add a stub"}</span>
       </button>
       {items.slice(2).map((item) => (
         <button key={item.id} type="button" className={active === item.id ? "nav-item active" : "nav-item"} onClick={() => onNavigate(item.id)}>

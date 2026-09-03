@@ -1,0 +1,37 @@
+{
+  "baseURL": "http://127.0.0.1:4173/",
+  "screenshots": [
+    "./qa-web/home-desktop.png",
+    "./qa-web/trips-desktop.png",
+    "./qa-web/wall-desktop.png",
+    "./qa-web/review-desktop.png",
+    "./qa-web/review-desktop-dark.png",
+    "./qa-web/home-mobile.png",
+    "./qa-web/trips-mobile.png"
+  ],
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "deviceScaleFactor": 1
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "deviceScaleFactor": 1
+    }
+  ],
+  "interactions": [
+    "desktop:home-loaded-without-device-chrome",
+    "desktop:trip-book-opened",
+    "desktop:wall-review-theme",
+    "desktop:ticket-uploaded-and-saved",
+    "mobile:responsive-navigation"
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "httpErrors": [],
+  "final": "passed"
+}

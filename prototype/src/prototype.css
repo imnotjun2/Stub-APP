@@ -1756,6 +1756,177 @@ button {
   }
 }
 
+/* Browser-native responsive presentation. The device preview runtime remains
+   available for tests, while the production entry uses this flat web shell. */
+.web-screen .stub-home,
+.web-screen .trip-home,
+.web-screen .wall-page,
+.web-screen .profile-page,
+.web-screen .subpage {
+  width: min(100%, 760px);
+  margin-inline: auto;
+  padding-top: 30px;
+}
+
+.web-screen .stub-home,
+.web-screen .trip-home,
+.web-screen .wall-page,
+.web-screen .profile-page {
+  padding-bottom: 116px;
+}
+
+.web-screen .bottom-nav {
+  right: auto;
+  bottom: 12px;
+  left: 50%;
+  width: min(calc(100% - 28px), 720px);
+  min-height: 68px;
+  padding: 7px 12px;
+  border: 1px solid var(--stub-border);
+  border-radius: 24px;
+  transform: translateX(-50%);
+  box-shadow: 0 12px 32px var(--stub-shadow);
+}
+
+.web-screen .nav-item {
+  border-radius: 16px;
+}
+
+.web-screen .nav-item.active {
+  background: var(--stub-brand-soft);
+}
+
+.web-screen .nav-rail-brand,
+.web-screen .nav-add-label {
+  display: none;
+}
+
+.web-screen .nav-add {
+  margin-top: -14px;
+}
+
+.web-screen .bottom-sheet {
+  right: 50%;
+  left: auto;
+  width: min(100%, 620px);
+  border-radius: 24px 24px 0 0;
+  transform-origin: bottom center;
+  translate: 50% 0;
+}
+
+@media (min-width: 960px) {
+  .web-screen .app-screen {
+    left: 188px;
+  }
+
+  .web-screen .stub-home,
+  .web-screen .trip-home,
+  .web-screen .wall-page,
+  .web-screen .profile-page,
+  .web-screen .subpage {
+    width: min(100%, 820px);
+    padding-top: 48px;
+    padding-right: 38px;
+    padding-left: 38px;
+  }
+
+  .web-screen .stub-home,
+  .web-screen .trip-home,
+  .web-screen .wall-page,
+  .web-screen .profile-page {
+    padding-bottom: 54px;
+  }
+
+  .web-screen .bottom-nav {
+    top: 24px;
+    right: auto;
+    bottom: 24px;
+    left: 24px;
+    width: 140px;
+    min-height: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto repeat(5, minmax(54px, auto));
+    align-content: start;
+    gap: 8px;
+    padding: 18px 12px;
+    border-radius: 28px;
+    transform: none;
+  }
+
+  .web-screen .nav-rail-brand {
+    display: grid;
+    gap: 7px;
+    margin: 4px 8px 24px;
+    color: var(--stub-ink);
+    font-family: Georgia, "Times New Roman", "Songti SC", serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .web-screen .nav-rail-brand small {
+    color: var(--stub-subtle);
+    font-family: "Songti SC", "STSong", serif;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+  }
+
+  .web-screen .brand-header > div:first-child {
+    display: none;
+  }
+
+  .web-screen .brand-header {
+    justify-content: flex-end;
+  }
+
+  .web-screen .nav-item {
+    height: 54px;
+    flex-direction: row;
+    gap: 11px;
+    justify-content: flex-start;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  .web-screen .nav-item svg {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+  }
+
+  .web-screen .nav-add {
+    width: 100%;
+    height: 50px;
+    margin: 0;
+    border-width: 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+  }
+
+  .web-screen .nav-add-label {
+    display: inline;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .web-screen .wall-page {
+    width: min(100%, 980px);
+  }
+
+  .web-screen .stub-wall {
+    columns: 3;
+    column-gap: 14px;
+  }
+
+  .web-screen .sheet-overlay {
+    left: 188px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

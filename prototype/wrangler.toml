@@ -1,0 +1,18 @@
+# Cloudflare Pages — Stub｜生活存根 web prototype
+#
+# 方式 A（推荐，零密钥）：Cloudflare Pages 后台连接 GitHub 仓库，填：
+#   Framework preset : Vite
+#   Root directory   : prototype
+#   Build command    : npm ci && npm run build
+#   Build output     : dist/client
+#   环境变量          : NODE_VERSION = 22
+#
+# 方式 B（纯 CI）：用 wrangler CLI 发布，下面这个文件名会被自动读取。
+#   需要仓库 Secrets：CLOUDFLARE_API_TOKEN、CLOUDFLARE_ACCOUNT_ID
+#   项目名即子域名：<name>.pages.dev
+
+name = "stub"
+compatibility_date = "2026-09-03"
+
+# 相对于 Pages 后台配置的 Root directory（prototype）解析
+pages_build_output_dir = "dist/client"

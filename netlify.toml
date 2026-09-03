@@ -1,0 +1,20 @@
+# Netlify — Stub｜生活存根 web prototype
+# 仓库根目录的 netlify.toml：连接仓库后零额外配置即可构建发布。
+# 免费子域名形如 <your-site-name>.netlify.app，在 Netlify 后台可自定义。
+
+[build]
+  base    = "prototype"
+  command = "npm ci && npm run build"
+  publish = "dist/client"
+
+[build.environment]
+  # Vite 8 / TypeScript 7 要求 Node >= 20.19（推荐 22.x）
+  NODE_VERSION = "22"
+  NPM_FLAGS    = "--no-audit --no-fund"
+
+# SPA fallback：当前 Demo 无 URL 路由，此规则仅兜底。
+# Netlify 会优先命中静态文件，只有找不到时才走这条重写，不会把 404 资源伪装成 HTML。
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

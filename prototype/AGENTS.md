@@ -12,10 +12,12 @@ When implementing from a selected generated mock, treat that image as the source
 
 ## Stub Product Decisions
 
-- The selected visual source is the first generated direction, stored at `/Users/bytedance/.codex/generated_images/019fec6c-b682-77b3-8f98-1c888cac97d4/exec-885e54d0-de79-46f5-91e1-2f05e92577cd.png`.
-- For the richer multi-page demo, the user delegated visual selection and asked for an autonomous first pass rather than a separate concept-choice checkpoint. Use the cream, map-first travel reference at `/Users/bytedance/.codex/generated_images/019fec6c-b682-77b3-8f98-1c888cac97d4/exec-5b81091e-f354-4fde-b5b1-dc4f9d5fd778.png` as the selected travel-screen target.
+- The selected home visual source is bundled at `../design-concepts/original-home-visual-reference.png`.
+- For the richer multi-page demo, use the bundled cream, map-first travel reference at `../design-concepts/original-trips-visual-reference.png` as the travel-screen target.
+- The user later selected `../design-concepts/review-option-3-SELECTED.png` as the next Review-page visual target. It is not implemented yet; wait for the user's promised refinement notes before changing the page.
 - Preserve its warm cream paper background, restrained brick-red primary action, golden memory accents, serif editorial moments, realistic ticket imagery, and generous whitespace.
 - This phase is a real HTML mobile demo, not a native iOS build. Its core flow must support camera or gallery image input, preview and metadata editing, local save, timeline display, detail view, and persistence after refresh.
+- The user later chose a browser-native responsive website presentation. The production entry must render without an iPhone/Android bezel, status bar, home indicator, simulated keyboard, device picker, or custom cursor. Mobile browsers keep the App-like bottom navigation; desktop browsers use a direct web layout with persistent navigation and a centered content column.
 - Keep the demo private and local by default. Do not introduce accounts, cloud upload, backend OCR, public feeds, or spending analytics unless the user requests a later phase.
 - Preserve every existing user-uploaded record. Keep `stub-demo-user-entries-v1` untouched as a fallback while migrating records and media idempotently to IndexedDB; continue previewing on the same origin so the two existing uploads remain visible.
 - A Stub is one canonical record that may appear simultaneously in the home timeline, the wall, and a travel book. Travel books reference the Stub and only own presentation metadata such as page order, day, caption, rotation, and scale; never duplicate the Stub itself.

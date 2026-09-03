@@ -17,6 +17,8 @@ type ScreenPortalContextValue = {
   screenRef: RefObject<HTMLDivElement | null>;
 };
 
+export type RuntimePresentation = "device" | "web";
+
 const ScreenPortalContext = createContext<ScreenPortalContextValue | null>(null);
 
 function suppressNativeDrag(event: DragEvent<HTMLElement>) {
@@ -61,13 +63,30 @@ function useDeviceScale(deviceWidth: number, deviceHeight: number) {
   return scale;
 }
 
-export function PhoneFrame({ children }: PropsWithChildren) {
+export function PhoneFrame({ children, presentation = "device" }: PropsWithChildren<{ presentation?: RuntimePresentation }>) {
   const { device } = useMobileDevice();
   const { geometry } = device;
   const scale = useDeviceScale(geometry.device.width, geometry.device.height);
   const screenRef = useRef<HTMLDivElement | null>(null);
   const contextValue = useMemo(() => ({ screenRef }), []);
   const mobileCursor = useMobileCursor();
+
+  if (presentation === "web") {
+    return (
+      <ScreenPortalContext.Provider value={contextValue}>
+        <div className="web-stage" data-testid="web-stage">
+          <div
+            ref={screenRef}
+            className="device-screen web-screen"
+            data-phone-screen
+            data-testid="device-screen"
+          >
+            {children}
+          </div>
+        </div>
+      </ScreenPortalContext.Provider>
+    );
+  }
 
   return (
     <ScreenPortalContext.Provider value={contextValue}>
