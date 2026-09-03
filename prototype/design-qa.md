@@ -1,52 +1,37 @@
-# Stub v0.2 Design QA
+# Stub responsive web Design QA
 
 ## Comparison setup
 
-- Primary travel reference: `/Users/bytedance/.codex/generated_images/019fec6c-b682-77b3-8f98-1c888cac97d4/exec-5b81091e-f354-4fde-b5b1-dc4f9d5fd778.png`.
-- Supporting home reference: `/Users/bytedance/.codex/generated_images/019fec6c-b682-77b3-8f98-1c888cac97d4/exec-885e54d0-de79-46f5-91e1-2f05e92577cd.png`.
-- Both source images are `853 × 1844`; they were normalized to the implementation's `393 × 852` CSS-pixel screen at device scale factor `1`.
-- The comparison state is light theme, Chinese locale, iPhone template runtime, with the Home or Trips top-level screen at scroll position zero.
-- Final combined evidence: `qa/comparison-home-final.png` and `qa/comparison-trips-final.png`.
+- Home visual source: `../design-concepts/original-home-visual-reference.png` (`853 × 1844`).
+- Trips visual source: `../design-concepts/original-trips-visual-reference.png` (`853 × 1844`).
+- Browser captures: mobile `390 × 844` and desktop `1440 × 1000`, device scale factor `1`.
+- Final mobile comparison sheets: `qa-web/comparison-home-mobile-final.png` and `qa-web/comparison-trips-mobile-final.png` (`804 × 876`).
 
-## Rendered QA and iteration history
+## Iteration history
 
-The first valid side-by-side travel comparison is stored at `qa/comparison-trips-pass1.png`. It showed that the implementation had the correct cream-paper palette, editorial serif hierarchy, red route line and book metaphor, but the `438px` map pushed almost the entire trip-book cover below the first viewport. This was an actionable P2 hierarchy mismatch because the reference deliberately shows both the map and a complete book cover together.
+The first web pass still presented the product inside an iPhone shell. This was a P1 product mismatch because the requested deliverable is a directly usable HTML website, not a phone mockup. The runtime now has an explicit `web` presentation: the document occupies the browser viewport, native scrolling and native file inputs are enabled, and device chrome, simulated status bar, home indicator, camera, device picker and simulated keyboard are omitted.
 
-The Trips layout was tightened without changing the selected visual language: the intro and segmented control became more compact, the map was reduced to `300px`, and the chapter card became a smaller left-aligned paper annotation. The final comparison at `qa/comparison-trips-final.png` now exposes the complete trip cover above the bottom navigation while preserving readable pins and the selected route. The Home comparison at `qa/comparison-home-final.png` confirms the warm cream background, restrained gold memory accents, realistic ticket crop, editorial brand/type treatment and brick-red primary action language. The remaining difference is the protected iPhone status bar and device frame, which are template-owned chrome rather than app-owned layout.
+The first desktop pass inherited the mobile bottom navigation and left too much unused horizontal space. The final responsive layout uses a persistent branded left rail above `960px`, an explicit “留下一张” action and a wider content canvas; mobile retains the compact floating bottom navigation. The Wall expands to three columns on desktop while content-heavy views stay within a readable maximum width.
 
-## Playwright interaction evidence
+Image decoding initially caused a late scroll-anchor shift during screenshot capture. The QA runner now waits for decoded images, resets to scroll position zero and verifies the stable frame before capture.
 
-The final direct Playwright run used the user's permitted system Chrome against `http://localhost:4173/` in a fresh isolated browser context. The full machine-readable result is `qa/playwright-result.json`, whose `final` value is `passed`. It captured eight `393 × 852` implementation screenshots:
+## Playwright evidence
 
-- `qa/implementation-home-light-final.png`
-- `qa/implementation-trips-light-final.png`
-- `qa/implementation-trip-book-light-final.png`
-- `qa/implementation-wall-light-final.png`
-- `qa/implementation-profile-dark-en-final.png`
-- `qa/implementation-trips-dark-en-final.png`
-- `qa/implementation-movie-review-light-final.png`
-- `qa/implementation-home-after-reload-final.png`
+`qa-web/playwright-result.json` reports `final: passed`. The direct Playwright run used system Chrome against `http://localhost:4173/` in a fresh browser context and checked:
 
-The automated journey verified Home load; idempotent migration of two synthetic legacy records while preserving the legacy key; Trips navigation; trip-book opening; supported airline-mark rendering; Wall tag filtering; dark theme and English switching; a real file upload; movie formats, tags, poster confirmation and memory-photo attachment; saving; canonical-record editing; adding the same record to a trip by reference; reloading; and persistence after reload. The final archive contained two untouched legacy records, three IndexedDB records, four IndexedDB media objects and one trip placement. The trip placement referenced the saved record ID and did not create a duplicate record. This isolated QA context intentionally did not read or mutate the user's actual browser profile.
+- no iPhone bezel or simulated device chrome at desktop or mobile widths;
+- full-viewport responsive layout with no horizontal overflow;
+- desktop left navigation and mobile bottom navigation;
+- Home, Trips, Trip Book, Wall and Review navigation;
+- three-column desktop Wall;
+- dark-mode rendering;
+- real ticket-file upload and save without a simulated keyboard;
+- no console errors, page errors or failed HTTP responses.
 
-Browser console errors, uncaught page errors and failed HTTP responses were all empty. The earlier empty-image `src` warnings were fixed by withholding the `src` attribute until an object URL exists, and the favicon 404 was fixed by declaring an existing bundled PNG favicon. The review screenshot waits for image decoding and explicitly dismisses the simulated keyboard before capture.
+Rendered evidence includes `home-desktop.png`, `trips-desktop.png`, `wall-desktop.png`, `review-desktop.png`, `review-desktop-dark.png`, `home-mobile.png` and `trips-mobile.png` under `qa-web/`.
 
 ## Final findings
 
-No actionable P0, P1 or P2 findings remain in the compared Home and Trips states or in the primary upload/edit/persist journey.
-
-- Typography and hierarchy: passed. Serif display moments, UI sans text, bilingual labels and wrapping remain legible in light and dark themes.
-- Spacing and clipping: passed. The Home ticket, Trips map/chapter/book hierarchy, fixed navigation, trip-book pages and review form do not overlap or clip at `393 × 852`.
-- Color and contrast: passed. The live-token contract requires at least `4.5:1` for informational text and `3:1` for strong borders; the rendered dark Profile and Trips screenshots remain readable.
-- Assets and crops: passed. Ticket images, map, poster, ramen photo and supported airline marks render at useful crops without placeholders.
-- States and interactions: passed. Primary navigation, filters, theme/locale controls, upload, edit, trip reference and reload persistence all completed.
-- Accessibility baseline: passed for this demo. Inputs are labelled, primary controls are semantic buttons, images have appropriate alternative text, reduced motion is respected and the tested contrast thresholds pass.
-
-## Verification commands
-
-- TypeScript: passed with `tsc --noEmit`.
-- Protected runtime: passed for 28 protected files.
-- Contract and hosting tests: 15 passed, 0 failed.
-- Production build and Sites packaging: passed. Vite reports only the non-blocking bundle-size advisory for the `548.89 kB` main chunk.
+No actionable P0, P1 or P2 findings remain. The cream-paper palette, editorial typography, gold memory accents, ticket-first content and brick-red primary action remain consistent with the selected Stub visual direction. Desktop and mobile now present the same canonical product as responsive browser views rather than duplicated device-specific implementations.
 
 final result: passed

@@ -1,0 +1,101 @@
+name: Prototype CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "prototype/**"
+      - "netlify.toml"
+      - "vercel.json"
+      - ".github/workflows/prototype.yml"
+  pull_request:
+    paths:
+      - "prototype/**"
+      - "netlify.toml"
+      - "vercel.json"
+      - ".github/workflows/prototype.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: prototype-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify prototype build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: prototype
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: prototype/.nvmrc
+          cache: npm
+          cache-dependency-path: prototype/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Mobile runtime integrity check
+        run: npm run check:runtime
+
+      - name: Build
+        run: npm run build
+
+      # 注意：契约测试里的 "emits the files required by Sites packaging"
+      # 会断言 dist/client/index.html、dist/server/index.js、dist/.openai/hosting.json
+      # 已存在 —— 所以必须先 build 再跑测试。
+      - name: Feature and Sites worker contract tests
+        run: node --test tests/stub-feature-contract.test.mjs tests/sites-worker.test.mjs
+
+      - name: Assert build output exists
+        run: |
+          test -f dist/client/index.html || { echo "::error::dist/client/index.html missing"; exit 1; }
+          test -f dist/server/index.js  || { echo "::error::dist/server/index.js missing"; exit 1; }
+          echo "Build output OK"
+          find dist/client -type f | sed 's/^/  /' | head -30
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stub-prototype-dist
+          path: prototype/dist/client
+          retention-days: 14
+
+  # 可选：发布到 Cloudflare Pages。
+  # 只在手动触发（workflow_dispatch）且位于 main 时运行 —— 避免 secrets 出现在 job 级
+  # if 表达式里（那会导致整个 workflow 编译失败、一个 job 都不生成）。
+  # 若改用 Netlify 或 Vercel 的 Git 集成，请忽略这个 job —— 它们自己会在 push 时构建发布。
+  deploy-cloudflare-pages:
+    name: Deploy to Cloudflare Pages
+    needs: verify
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: stub-prototype-dist
+          path: prototype/dist/client
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: prototype
+          command: pages deploy dist/client --project-name=stub

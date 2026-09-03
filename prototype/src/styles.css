@@ -45,6 +45,65 @@ body {
   overflow: hidden;
 }
 
+.web-stage {
+  position: relative;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--stub-canvas, #f6f1e7);
+}
+
+.device-screen.web-screen {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  border-radius: 0;
+  background: var(--stub-canvas, #f6f1e7);
+  box-shadow: none;
+  cursor: default;
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+.device-screen.web-screen,
+.device-screen.web-screen * {
+  cursor: default !important;
+}
+
+.device-screen.web-screen button,
+.device-screen.web-screen a,
+.device-screen.web-screen [role="button"] {
+  cursor: pointer !important;
+}
+
+.device-screen.web-screen input,
+.device-screen.web-screen textarea,
+.device-screen.web-screen select {
+  cursor: text !important;
+}
+
+.device-screen.web-screen *:focus-visible {
+  outline: 2px solid var(--stub-brand, #b94738) !important;
+  outline-offset: 3px;
+}
+
+.mobile-app-viewport[data-presentation="web"] {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+}
+
+.mobile-app-viewport[data-presentation="web"] .mobile-page {
+  --mobile-safe-area-height: 0px;
+}
+
+.mobile-app-viewport[data-presentation="web"] .mobile-scroll {
+  overflow-anchor: none;
+  touch-action: pan-y;
+}
+
 button,
 input,
 textarea {
